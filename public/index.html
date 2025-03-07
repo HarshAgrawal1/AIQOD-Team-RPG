@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Cloning</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        /* Loader Container */
+.loader-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* Spinning Loader */
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+/* Loader Text */
+.loader-container p {
+    font-size: 14px;
+    margin-top: 10px;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Loader Animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>AI Voice Cloning</h2>
+        <form id="uploadForm">
+            <input type="file" name="voice" required>
+            <input type="text" id="textInput" name="text" placeholder="Enter text here..." required>
+            <select name="language">
+                <option value="en">English</option>
+                <option value="fr">French</option>
+                <option value="es">Spanish</option>
+                <option value="hi">Hindi</option>
+                <option value="de">German</option>
+                <option value="zh">Chinese</option>
+            </select>
+            <button type="submit">Generate Voice</button>
+        </form>
+
+        <!-- Loader (Hidden by Default) -->
+        <div id="loading" class="loader-container">
+            <div class="loader"></div>
+            <p>Generating voice... Please wait</p>
+        </div>
+
+        <a id="downloadLink" download>Download Speech</a>
+    </div>
+
+    <script>
+        document.getElementById("uploadForm").onsubmit = async (event) => {
+    event.preventDefault();  // Prevent form refresh
+
+    // Get input values
+    const textInput = document.getElementById("textInput").value;
+    const voiceFile = document.querySelector("input[type='file']").files[0];
+    const language = document.querySelector("select[name='language']").value;
+
+    if (!textInput || !voiceFile) {
+        alert("Please provide both text and a voice file.");
+        return;
+    }
+
+    // Show loader
+    document.getElementById("loading").style.display = "flex";
+
+    // Create FormData object
+    const formData = new FormData();
+    formData.append("text", textInput);
+    formData.append("voice", voiceFile);
+    formData.append("language", language);
+
+    try {
+        const response = await fetch("http://localhost:5000/process", {  // Make sure this URL is correct
+            method: "POST",
+            body: formData  // No need for Content-Type header with FormData
+        });
+
+        const data = await response.json();
+        console.log("Server Response:", data);
+
+        // Hide loader
+        document.getElementById("loading").style.display = "none";
+
+        if (response.ok) {
+            // Set download link
+            const downloadLink = document.getElementById("downloadLink");
+            downloadLink.href = `aDOneeee`;
+            downloadLink.innerText = "Download Speech";
+            downloadLink.style.display = "block";
+        } else {
+            alert(`Error: ${data.error}`);
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        alert("Failed to connect to the server.");
+    }
+};
+
+
+    </script>
+
+</body>
+</html>
